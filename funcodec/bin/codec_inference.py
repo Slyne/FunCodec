@@ -310,12 +310,13 @@ def inference_modelscope(
 
             sub_quants_writer(_key, to_write)
 
+        run_mod = kwargs.get("run_mod", "inference")
         for keys, batch in loader:
             assert isinstance(batch, dict), type(batch)
             assert all(isinstance(s, str) for s in keys), keys
             _bs = len(next(iter(batch.values())))
             assert len(keys) == _bs, f"{len(keys)} != {_bs}"
-            if should_resample:
+            if should_resample and run_mod not in ["decode", "decode_emb"]:
                 batch["speech"] = torchaudio.functional.resample(
                     batch["speech"],
                     orig_freq=kwargs["file_sampling_rate"],
@@ -350,10 +351,12 @@ def inference_modelscope(
             )
 
             if should_resample and recon_speech is not None:
+                #print("before recon", recon_speech.shape)
                 recon_speech = torchaudio.functional.resample(
                     recon_speech,
                     orig_freq=sampling_rate,
                     new_freq=kwargs["file_sampling_rate"])
+                #print("after recon", recon_speech.shape)
 
             for i, key in enumerate(keys):
                 recon_wav = None
@@ -362,8 +365,12 @@ def inference_modelscope(
                     ilen = codec_len * my_model.model.quantizer.encoder_hop_length
                 else:
                     ilen = speech_length[i]
+                    ilen = ilen // (kwargs["file_sampling_rate"] / sampling_rate)
                     codec_len = torch.ceil(ilen / my_model.model.quantizer.encoder_hop_length).int().item()
+                    print(codec_len)
                 if recon_speech is not None:
+                    ilen = ilen * (kwargs["file_sampling_rate"] / sampling_rate)
+                    ilen = int(ilen)
                     recon_wav = recon_speech[i].cpu()[:, :ilen]
                 item = {"key": key, "value": recon_wav}
                 if output_path is not None:
@@ -574,7 +581,7 @@ def main(cmd=None):
         n_gpu = len(args.gpuid_list.split(","))
         gpuid = args.gpuid_list.split(",")[(jobid - 1) % n_gpu]
     os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"] = gpuid
+    #os.environ["CUDA_VISIBLE_DEVICES"] = gpuid
     if torch.__version__ >= "1.10":
         torch.cuda.set_device(int(gpuid))
     inference(**kwargs)

@@ -61,7 +61,9 @@ class Audio2Mel(nn.Module):
             win_length=self.win_length,
             window=self.window,
             center=False,
+            return_complex=True
         )
+        fft = torch.view_as_real(fft)
         power_spec = torch.sum(torch.pow(fft, 2), dim=[-1])
         mel_output = torch.matmul(self.mel_basis, power_spec)
         log_mel_spec = torch.log10(torch.clamp(mel_output, min=1e-5))
@@ -376,7 +378,6 @@ class Encodec(AbsGANESPnetModel):
             x_complex = self.stft_fun(x.squeeze(1))
             x = torch.cat([x_complex.real, x_complex.imag], dim=1)
         emb = self.encoder(x)
-
         return emb, scale
 
     def _decode(self, encoded_frames: tp.List[EncodedFrame]) -> torch.Tensor:

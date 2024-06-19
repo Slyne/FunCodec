@@ -27,7 +27,7 @@ if __name__ == '__main__':
     args = parse_args()
 
     # setup local gpu_id
-    os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu_id)
+    #os.environ['CUDA_VISIBLE_DEVICES'] = str(args.gpu_id)
     if torch.__version__ >= "1.7.2":
         torch.cuda.set_device(args.gpu_id)
 
