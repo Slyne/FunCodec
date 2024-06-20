@@ -61,3 +61,10 @@ sample_rates=(16000 44100 48000)  # the input wavscp sample rate ca be 16khz, 44
 
 ```
 
+Run:
+```
+cd FunCodec/egs/codecSuperb/
+# modify the ref_audio_dir and syn_audio_dir
+bash do_codecSuperb_infer.sh
+```
+
