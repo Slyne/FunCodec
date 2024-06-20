@@ -61,14 +61,14 @@ optim_conf:             # keyword arguments for selected optimizer
 # optimizer for discriminator
 optim2: adam              # optimizer type
 optim2_conf:              # keyword arguments for selected optimizer
-    lr: 0.0003            # learning rate
+    lr: 0.0001            # learning rate
     betas: [0.5, 0.9]
 
 # training settings
-num_iters_per_epoch: 640 # number of iterations per epoch  org: 10000
+num_iters_per_epoch: 200 # number of iterations per epoch  org: 10000
 max_epoch: 60             # number of epochs
 accum_grad: 1             # gradient accumulation
-batch_size: 16            # batch size (feats_type=raw)
+batch_size: 64            # batch size (feats_type=raw)
 drop_last: true           # drop last batch
 batch_type: unsorted      # how to make batch
 grad_clip: -1             # gradient clipping norm
