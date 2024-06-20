@@ -46,7 +46,7 @@ python3 generate_wavscp.py --input_dir=/ws/data
 
 ### Download models
 
-Download models from [TO UPDATE](xxxx). And put them under `FunCodec/egs/codecSuperb/models`
+Download models from [here](https://huggingface.co/Slyne/funcodec_codecSuperb). And put them under `FunCodec/egs/codecSuperb/models`
 
 
 ### Do inference
